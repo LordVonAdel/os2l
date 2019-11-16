@@ -1,0 +1,25 @@
+{
+  "name": "os2l",
+  "version": "1.0.0",
+  "description": "NodeJS implementation of the Open Sound to Light protocol",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LordVonAdel/os2l.git"
+  },
+  "keywords": [
+    "os2l"
+  ],
+  "author": "LordVonAdel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LordVonAdel/os2l/issues"
+  },
+  "homepage": "https://github.com/LordVonAdel/os2l#readme",
+  "dependencies": {
+    "bonjour": "^3.5.0"
+  }
+}
