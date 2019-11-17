@@ -75,9 +75,15 @@ class OS2LServer extends EventEmitter {
         });
 
         client.on("data", data => {
+          let parsed = null;
           try {
             let str = data.toString('utf8');
-            let parsed = JSON.parse(str);
+            parsed = JSON.parse(str);
+          } catch(e) {
+            this.emit("warning", new Error("Bad OS2L package received!"));
+          }
+
+          if (parsed) {
             this.emit("data", parsed);
             this.emit(parsed.evt, parsed);
             if (parsed.evt == "btn") {
@@ -87,8 +93,6 @@ class OS2LServer extends EventEmitter {
                 this.emit("btnOff", parsed.name);
               }
             }
-          } catch(e) {
-            this.emit("warning", new Error("Bad OS2L package received!"));
           }
         });
 

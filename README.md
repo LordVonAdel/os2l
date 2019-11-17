@@ -12,7 +12,7 @@ npm install os2l
 ### For servers 
 Usually the DMX software: 
 ```javascript
-const { OS2LServer}  = require("os2l");
+const { OS2LServer} = require("os2l");
 
 // All options are optional
 let server = new OS2LServer({
@@ -67,15 +67,15 @@ client.connect().then(() => {
 ```
 
 ## Hosting on Windows
-To host on windows, "Bonjour Print Services" or the SDK needs to be installed on the host system: [https://support.apple.com/kb/DL999](https://support.apple.com/kb/DL999).
+To host on windows, "[Bonjour Print Services](https://support.apple.com/kb/DL999)" or the SDK needs to be installed on the host system. It is needed for [DNS service discovery](http://www.dns-sd.org/). When addresses and ports are given manually, this is not needed.
 
 I don't like that we need to depend on an apple product for this to work. A DNS-SD service is already implemented in windows 10 but is not accessible to us. [This](https://docs.microsoft.com/en-us/uwp/api/windows.networking.servicediscovery.dnssd.dnssdserviceinstance) is a good starting point to dig deeper and maybe find a solution.
 
 ## Hosting on Linux
-To work on Linux, "Avahi" is needed. (Not tested)
+To work on Linux, "Avahi" is needed for DNS-SD. (Not tested)
 
 ## Hosting  on MacOS
-On MacOS it will work default. (Not tested)
+On MacOS it will work by default. (Not tested)
 
 ## API
 ### OS2LServer

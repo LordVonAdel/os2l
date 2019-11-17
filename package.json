@@ -1,6 +1,6 @@
 {
   "name": "os2l",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "NodeJS implementation of the Open Sound to Light protocol",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,9 @@
     "url": "git+https://github.com/LordVonAdel/os2l.git"
   },
   "keywords": [
-    "os2l"
+    "os2l", 
+    "dmx",
+    "virtualdj"
   ],
   "author": "LordVonAdel",
   "license": "MIT",
