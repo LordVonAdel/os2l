@@ -113,8 +113,8 @@ class OS2LServer extends EventEmitter {
       this.net.listen(this.port, () => {
         if (callback) {
           callback();
-          resolve();
         }
+        resolve();
       });
     });
   }

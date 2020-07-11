@@ -1,6 +1,6 @@
 {
   "name": "os2l",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "NodeJS implementation of the Open Sound to Light protocol",
   "main": "index.js",
   "scripts": {
