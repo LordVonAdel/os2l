@@ -1,3 +1,5 @@
+import { EventEmitter } from "events"
+
 type OS2LServerOptions = {
   doPublish: boolean,
   port: number
