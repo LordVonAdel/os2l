@@ -9,7 +9,7 @@ export class OS2LServer extends EventEmitter {
 
   constructor(options: OS2LServerOptions);
 
-  start(callback?: () => void): void;
+  start(callback?: () => void): Promise<void>;
   stop(): void;
   feedback(name: string, state: boolean, page?: string): void;
   
