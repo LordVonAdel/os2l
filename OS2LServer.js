@@ -44,7 +44,7 @@ class OS2LServer extends EventEmitter {
     }
 
     this.on("error", () => {
-      this.close();
+      this.stop();
     });
   }
 
