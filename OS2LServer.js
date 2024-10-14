@@ -74,24 +74,33 @@ class OS2LServer extends EventEmitter {
           }
         });
 
-        client.on("data", data => {
-          let parsed = null;
-          try {
-            let str = data.toString('utf8');
-            parsed = JSON.parse(str);
-          } catch(e) {
-            this.emit("warning", new Error("Bad OS2L package received!"));
-          }
+        let buffer = '';
 
-          if (parsed) {
-            this.emit("data", parsed);
-            this.emit(parsed.evt, parsed);
-            if (parsed.evt == "btn") {
-              if (parsed.state == "on") {
-                this.emit("btnOn", parsed.name);
-              } else {
-                this.emit("btnOff", parsed.name);
+        client.on('data', data => {
+          buffer += data.toString('utf8');
+
+          let endIndex;
+          while ((endIndex = buffer.indexOf('}')) !== -1) {
+            let jsonString = buffer.slice(0, endIndex + 1); // Extract the substring up to and including the closing brace
+            buffer = buffer.slice(endIndex + 1); // Remove the parsed JSON from the buffer
+
+            try {
+              let parsed = JSON.parse(jsonString);
+
+              this.emit("data", parsed);
+              this.emit(parsed.evt, parsed);
+
+              if (parsed.evt == "btn") {
+                if (parsed.state == "on") {
+                  this.emit("btnOn", parsed.name);
+                } else {
+                  this.emit("btnOff", parsed.name);
+                }
               }
+            } catch (e) {
+              // Handle JSON parse error
+              this.emit("warning", new Error("Bad OS2L package received!"));
+              // Optionally log or handle the error further
             }
           }
         });
