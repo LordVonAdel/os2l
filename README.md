@@ -131,7 +131,8 @@ let client = new OS2LClient({
   port: 1806, // (optional) The port to connect to
   host: "localhost", // (optional) Hostname of the server
   useDNS_SD: false, // (optional) Use DNS-SD? Is this is set to true, host and port are determined automatically.
-  autoReconnect: true // (optional) Reconnect after connection lost?
+  autoReconnect: true, // (optional) Reconnect after connection lost?
+  autoReconnectInterval: 1000 // (optional) Milliseconds between tries when auto reconnect in true
 });
 ```
 

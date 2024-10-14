@@ -18,7 +18,7 @@ class OS2LServer extends EventEmitter {
 
     // Option parameters
     this.port = 1503;
-    this.doPublish = true;;
+    this.doPublish = true;
 
     if (typeof options != "object") throw new Error("Expected an object for options!");
 
@@ -131,8 +131,14 @@ class OS2LServer extends EventEmitter {
     this.net.unref();
     this.net = null;
 
-    this.service.stop();
-    this.service = null;
+    for (const client of this.clients){
+      client.destroy()
+    }
+
+    if (this.service) {
+      this.service.stop();
+      this.service = null;
+    }
 
     this.emit("closed");
   }

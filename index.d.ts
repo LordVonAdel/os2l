@@ -5,7 +5,7 @@ type OS2LServerOptions = {
   port: number
 }
 
-export class OS2LServer extends EventEmitter {
+export declare class OS2LServer extends EventEmitter {
 
   constructor(options: OS2LServerOptions);
 
@@ -19,14 +19,15 @@ type OS2LClientOptions = {
   port: number,
   host: string,
   useDNS_SD: boolean,
-  autoReconnect: boolean
+  autoReconnect: boolean,
+  autoReconnectInterval: number
 }
 
 export declare class OS2LClient extends EventEmitter {
 
   constructor(options: OS2LClientOptions);
 
-  connect(callback: () => void): void;
+  connect(callback?: () => void): Promise<Void>;
   close(): void;
   buttonOn(name: string): void;
   buttonOff(name: string): void;

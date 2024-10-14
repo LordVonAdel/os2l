@@ -14,6 +14,7 @@ class OS2LClient extends EventEmitter {
    * @param {String} [options.host] Host to connect to
    * @param {Boolean} [options.useDNS_SD] Use DNS-SD to detect port and host automatically
    * @param {Boolean} [options.autoReconnect] Do reconnect automatically after connection lost?
+   * @param {Boolean} [options.autoReconnectInterval] Interval to try reconnects in milliseconds
    */
   constructor(options = {}) {
     super();
@@ -22,6 +23,7 @@ class OS2LClient extends EventEmitter {
     this.host = "local";
     this.useDNS_SD = true;
     this.autoReconnect = true;
+    this.autoReconnectInterval = 1000;
 
     if (typeof options != "object") throw new Error("Expected an object for options!");
 
@@ -41,16 +43,29 @@ class OS2LClient extends EventEmitter {
       this.autoReconnect = Boolean(options.autoReconnect);
     }
 
+    if ("autoReconnectInterval" in options) {
+      this.autoReconnectInterval = Number(options.autoReconnectInterval);
+    }
+
     // The TCP client
     this.client = null;
+
+    if (this.autoReconnect) {
+      this.on("closed", async () => {
+        this.emit("warning", "OS2L Client had error. Trying to reconnect...");
+        await new Promise(resolve => setTimeout(resolve, this.autoReconnectInterval))
+        this.connect();
+      });
+    }
   }
 
   /**
    * Connects the client
    * @param {Function} callback Is called when a connection was made
+   * @return {Promise<void>}
    */
   connect(callback) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       function cb() {
         if (callback) callback();
         this.emit("connected");
@@ -58,18 +73,17 @@ class OS2LClient extends EventEmitter {
       }
   
       if (this.client) {
-        this.emit("warning", new Error("OS2LClient is already connected!"));
+        this.emit("warning", new Error("OS2L Client is already connected!"));
         return;
       }
   
       this.client = new net.Socket();
-      this.client.on("error", err => { 
-        this.emit("error", err)
-        this.close();
-        reject();
 
-        if (this.autoReconnect) {
-          this.connect();
+      this.client.on("error", async err => { 
+        this.close();
+        if (!this.autoReconnect) {
+          this.emit("error", err);
+          reject()
         }
       });
 
@@ -78,6 +92,12 @@ class OS2LClient extends EventEmitter {
         let parsed = JSON.parse(str);
         if (parsed.evt == "feedback") {
           this.emit("feedback", parsed.name || "", parsed.state || "off", parsed.page);
+        }
+      });
+
+      this.client.on("close", () => {
+        if (this.client) {
+          this.close();
         }
       });
   
@@ -113,7 +133,7 @@ class OS2LClient extends EventEmitter {
    */
   close() {
     if (!this.client) {
-      this.emit("error", new Error("Can't close OS2Client because it is not open!"));
+      this.emit("error", new Error("Can't close OS2LClient because it is not open!"));
       return;
     }
     this.client.destroy();
