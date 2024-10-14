@@ -87,11 +87,27 @@ class OS2LClient extends EventEmitter {
         }
       });
 
-      this.client.on("data", data => {
-        let str = data.toString('utf8');
-        let parsed = JSON.parse(str);
-        if (parsed.evt == "feedback") {
-          this.emit("feedback", parsed.name || "", parsed.state || "off", parsed.page);
+      let buffer = "";
+      
+      this.client.on('data', data => {
+        buffer += data.toString('utf8');
+
+        let endIndex;
+        while ((endIndex = buffer.indexOf('}')) !== -1) {
+          let jsonString = buffer.slice(0, endIndex + 1); // Extract the substring up to and including the closing brace
+          buffer = buffer.slice(endIndex + 1); // Remove the parsed JSON from the buffer
+
+          try {
+            let parsed = JSON.parse(jsonString);
+            if (parsed.evt == "feedback") {
+              this.emit("feedback", parsed.name || "", parsed.state || "off", parsed.page);
+            }
+          } catch (e) {
+            console.error(e);
+            // Handle JSON parse error
+            this.emit("warning", new Error("Bad OS2L package received!"));
+            // Optionally log or handle the error further
+          }
         }
       });
 
