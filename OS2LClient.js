@@ -1,6 +1,7 @@
 const { EventEmitter } = require("events");
 const bonjour = require('bonjour')();
 const net = require("net");
+const DataHandler = require("./DataHandler.js");
 
 /**
  * Provides a TCP client that is able to talk in OS2L language
@@ -24,6 +25,17 @@ class OS2LClient extends EventEmitter {
     this.useDNS_SD = true;
     this.autoReconnect = true;
     this.autoReconnectInterval = 1000;
+
+    this.dataHandler = new DataHandler();
+    this.dataHandler.on("data", object => {
+      if (object.evt == "feedback") {
+        this.emit("feedback", object.name || "", object.state || "off", object.page);
+      }
+    });
+
+    this.dataHandler.on("error", err => {
+      this.emit("error", err)
+    });
 
     if (typeof options != "object") throw new Error("Expected an object for options!");
 
@@ -88,11 +100,7 @@ class OS2LClient extends EventEmitter {
       });
 
       this.client.on("data", data => {
-        let str = data.toString('utf8');
-        let parsed = JSON.parse(str);
-        if (parsed.evt == "feedback") {
-          this.emit("feedback", parsed.name || "", parsed.state || "off", parsed.page);
-        }
+        this.dataHandler.handle(data.toString('utf8'));
       });
 
       this.client.on("close", () => {

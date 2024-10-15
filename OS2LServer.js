@@ -1,6 +1,7 @@
 const { EventEmitter } = require("events");
 const bonjour = require("bonjour")();
 const net = require("net");
+const DataHandler = require("./DataHandler.js");
 
 /**
  * The OS2LServer handles incoming commands. Usally this is part of a DMX Software.
@@ -15,6 +16,23 @@ class OS2LServer extends EventEmitter {
    */
   constructor(options = {port: 1503}) {
     super();
+
+    this.dataHandler = new DataHandler();
+    this.dataHandler.on("data", object => {
+      this.emit("data", object);
+      this.emit(object.evt, object);
+      if (object.evt == "btn") {
+        if (object.state == "on") {
+          this.emit("btnOn", object.name);
+        } else {
+          this.emit("btnOff", object.name);
+        }
+      }
+    });
+
+    this.dataHandler.on("error", err => {
+      this.emit("error", err)
+    });
 
     // Option parameters
     this.port = 1503;
@@ -75,25 +93,7 @@ class OS2LServer extends EventEmitter {
         });
 
         client.on("data", data => {
-          let parsed = null;
-          try {
-            let str = data.toString('utf8');
-            parsed = JSON.parse(str);
-          } catch(e) {
-            this.emit("warning", new Error("Bad OS2L package received!"));
-          }
-
-          if (parsed) {
-            this.emit("data", parsed);
-            this.emit(parsed.evt, parsed);
-            if (parsed.evt == "btn") {
-              if (parsed.state == "on") {
-                this.emit("btnOn", parsed.name);
-              } else {
-                this.emit("btnOff", parsed.name);
-              }
-            }
-          }
+          this.dataHandler.handle(data.toString('utf8'));
         });
 
         client.on("end", () => {

@@ -77,6 +77,9 @@ To work on Linux, "Avahi" is needed for DNS-SD. (Not tested)
 ## Hosting  on MacOS
 On MacOS it will work by default. (Not tested)
 
+## Limitations
+The characters `{` and `}` in strings like button names may produce errors during parsing of incoming packet data. However, when starting with an open bracket and matching the count with closing brackets after that should work. So a name like `Very{cool}button` is still a valid parsable name.
+
 ## API
 ### OS2LServer
 ```javascript
