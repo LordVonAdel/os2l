@@ -90,6 +90,7 @@ class OS2LServer extends EventEmitter {
           if (index >= 0) {
             this.clients.splice(index, 1);
           }
+          this.emit("closed");
         });
 
         client.on("data", data => {
@@ -101,6 +102,7 @@ class OS2LServer extends EventEmitter {
           if (index >= 0) {
             this.clients.splice(index, 1);
           }
+          this.emit("closed");
         });
       
       });

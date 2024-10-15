@@ -78,11 +78,11 @@ class OS2LClient extends EventEmitter {
    */
   connect(callback) {
     return new Promise(async (resolve, reject) => {
-      function cb() {
+      const cb = () => {
         if (callback) callback();
         this.emit("connected");
         resolve();
-      }
+      };
   
       if (this.client) {
         this.emit("warning", new Error("OS2L Client is already connected!"));
